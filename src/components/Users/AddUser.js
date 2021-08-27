@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, Fragment, useRef } from "react";
 
 import Card from "../UI/Card";
 import Button from "../UI/Button";
@@ -6,52 +6,64 @@ import ErrorModal from "../UI/ErrorModal";
 import classes from "./AddUser.module.css";
 
 const AddUser = (props) => {
-  const [enteredUsername, setEnteredUsername] = useState("");
-  const [enteredAge, setEnteredAge] = useState("");
+  const nameInputRef = useRef();
+  const ageInputRef = useRef();
+
+  // Don't need if using refs instead
+  // const [enteredUsername, setEnteredUsername] = useState("");
+  // const [enteredAge, setEnteredAge] = useState("");
   const [error, setError] = useState();
 
-  const usernameChangeHandler = (event) => {
-    setEnteredUsername(() => {
-      return event.target.value;
-    });
-  };
+  // Don't need if using refs instead
+  // const usernameChangeHandler = (event) => {
+  //   setEnteredUsername(() => {
+  //     return event.target.value;
+  //   });
+  // };
 
-  const ageChangeHandler = (event) => {
-    setEnteredAge(() => {
-      return event.target.value;
-    });
-  };
+  // const ageChangeHandler = (event) => {
+  //   setEnteredAge(() => {
+  //     return event.target.value;
+  //   });
+  // };
 
   const addUserHandler = (event) => {
     event.preventDefault();
-    console.log("addUserHandler", enteredUsername, enteredAge);
-    let errorStatus = false;
+    console.log("addUserHandler. nameInputRef", nameInputRef.current.value);
+    const enteredName = nameInputRef.current.value;
+    const enteredUserAge = ageInputRef.current.value;
 
-    if (enteredUsername.trim().length === 0) {
+    if (enteredName.trim().length === 0) {
       setError({
         title: "Invalid Name",
         message: "Please enter a valid name.",
       });
-      errorStatus = true;
+      return;
     }
-    if (enteredAge.trim().length === 0 || parseInt(enteredAge.trim()) < 1) {
+    if (
+      enteredUserAge.trim().length === 0 ||
+      parseInt(enteredUserAge.trim()) < 1
+    ) {
       setError({
         title: "Invalid Age",
         message: "Please enter a valid age.",
       });
-      errorStatus = true;
+      return;
     }
 
-    if (!errorStatus) {
-      props.onAddUser(enteredUsername, enteredAge);
-    }
+    props.onAddUser(enteredName, enteredUserAge);
 
-    setEnteredUsername(() => {
-      return "";
-    });
-    setEnteredAge(() => {
-      return "";
-    });
+    // Direct DOM manipulation with refs to reset input values
+    nameInputRef.current.value = "";
+    ageInputRef.current.value = "";
+
+    // Don't need if using refs to reset instead
+    // setEnteredUsername(() => {
+    //   return "";
+    // });
+    // setEnteredAge(() => {
+    //   return "";
+    // });
   };
 
   const cancelModal = () => {
@@ -59,7 +71,7 @@ const AddUser = (props) => {
   };
 
   return (
-    <div>
+    <Fragment>
       {error && (
         <ErrorModal
           title={error.title}
@@ -70,25 +82,15 @@ const AddUser = (props) => {
       <Card className={classes.input}>
         <form onSubmit={addUserHandler}>
           <label htmlFor="username">Username</label>
-          <input
-            id="username"
-            type="text"
-            value={enteredUsername}
-            onChange={usernameChangeHandler}
-          ></input>
+          <input id="username" type="text" ref={nameInputRef}></input>
           <label htmlFor="userAge">Age (Years)</label>
-          <input
-            id="userAge"
-            type="number"
-            value={enteredAge}
-            onChange={ageChangeHandler}
-          ></input>
+          <input id="userAge" type="number" ref={ageInputRef}></input>
           <Button type="submit" onClick={addUserHandler}>
             Add User
           </Button>
         </form>
       </Card>
-    </div>
+    </Fragment>
   );
 };
 

@@ -32,10 +32,11 @@ const App = () => {
     });
   };
   return (
-    <div>
+    // This is the same as using <React.Fragment>
+    <>
       <AddUser onAddUser={addUserHandler} />
       <UsersList users={usersList} />
-    </div>
+    </>
   );
 };
 
